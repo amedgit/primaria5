@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amedgit.github.io/primaria5/sitemap.xml
