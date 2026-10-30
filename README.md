@@ -12,7 +12,8 @@ inteligente de fallos, examen final y progreso guardado en el dispositivo.
 - 3 fotos por unidad (principal + galería), ampliables, con pie y crédito.
 - Resumen locutado en MP3 (~1 min por unidad).
 - Test por unidad con corrección y explicación.
-- Repaso de preguntas falladas y examen final de 20 preguntas.
+- Repaso de preguntas falladas y examen corto de 20 preguntas.
+- **Simulacro de examen**: 40 preguntas, 45 minutos, navegación libre, marcar para revisar, nota sobre 10 y resultado por unidad.
 - Estrellas, XP, racha de días e historial (solo en tu navegador).
 - Instalable como app (PWA) y funciona sin conexión tras la primera visita.
 - Modo claro/oscuro y diseño adaptado a móvil.

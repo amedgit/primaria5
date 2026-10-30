@@ -15,6 +15,9 @@
   let ultimoResultado = null;
   let hablando = false;
   let audioActual = null;
+  let simulacro = null;
+  let timerSim = null;
+  let ultimoSimulacro = null;
 
   /* ---------- banco de preguntas ---------- */
   UNIDADES.forEach(function (u) {
@@ -257,8 +260,9 @@
     html += '<h1>Estudia Ciencias de la Naturaleza <span class="acento">jugando</span></h1>';
     html += '<p class="lead">Lee las ideas clave, gira las tarjetas de vocabulario y pon a prueba lo que sabes. La app recuerda tus fallos y te los vuelve a preguntar.</p>';
     html += '<div class="hero-acciones">';
-    html += '<button class="btn btn-primario" data-nav="repaso" ' + (pendientes ? "" : "disabled") + '>🎯 Repasar mis fallos' + (pendientes ? " (" + pendientes + ")" : "") + "</button>";
-    html += '<button class="btn btn-secundario" data-nav="examen">🏆 Examen final (20 preguntas)</button>';
+    html += '<button class="btn btn-secundario" data-nav="repaso" ' + (pendientes ? "" : "disabled") + '>🎯 Repasar mis fallos' + (pendientes ? " (" + pendientes + ")" : "") + "</button>";
+    html += '<button class="btn btn-primario" data-nav="simulacro">🎓 Simulacro · 40 preguntas</button>';
+    html += '<button class="btn btn-secundario" data-nav="examen">🏆 Examen corto (20)</button>';
     html += "</div>";
     html += '<div class="hero-datos">';
     html += '<div><strong>' + totalPct + '%</strong><span>temario dominado</span></div>';
@@ -298,7 +302,7 @@
     html += "<li><strong>Lee</strong> las ideas clave de la unidad (o pulsa «Escuchar resumen»).</li>";
     html += "<li><strong>Gira las tarjetas</strong> de vocabulario hasta saberlas sin mirar.</li>";
     html += "<li><strong>Haz el test</strong>: si fallas, la app te explica el porqué y guarda la pregunta para repasarla.</li>";
-    html += "<li>Cuando tengas 3 estrellas en varias unidades, prueba el <strong>examen final</strong>.</li>";
+    html += "<li>Cuando tengas 3 estrellas en varias unidades, haz un <strong>simulacro completo</strong> (40 preguntas y 45 minutos).</li>";
     html += "</ol></section>";
 
     main.innerHTML = html;
@@ -472,6 +476,340 @@
       idx: 0, aciertos: 0, respuestas: [], contestada: false, seleccion: null, examen: false
     };
     renderQuiz();
+  }
+
+
+  /* ---------- simulacro de examen ---------- */
+  function iniciarSimulacro() {
+    const porUnidad = UNIDADES.map(function (u) {
+      return barajar(u.preguntas).slice(0, 2);
+    });
+    const usadas = {};
+    porUnidad.forEach(function (arr) { arr.forEach(function (p) { usadas[p.qid] = 1; }); });
+    const extra = barajar(TODAS.filter(function (p) { return !usadas[p.qid]; })).slice(0, 10);
+    const preguntas = barajar(porUnidad.reduce(function (a, b) { return a.concat(b); }, []).concat(extra))
+      .map(prepararPregunta);
+    simulacro = {
+      preguntas: preguntas,
+      respuestas: new Array(preguntas.length).fill(null),
+      marcadas: {},
+      idx: 0,
+      inicio: Date.now(),
+      duracion: 45 * 60,
+      terminado: false
+    };
+    renderSimulacro();
+    arrancarTimer();
+  }
+
+  function detenerTimerSim() {
+    if (timerSim) { clearInterval(timerSim); timerSim = null; }
+  }
+
+  function fmtReloj(s) {
+    const m = Math.floor(s / 60);
+    const ss = s % 60;
+    return m + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+
+  function restanteSim() {
+    if (!simulacro) return 0;
+    return Math.max(0, simulacro.duracion - Math.floor((Date.now() - simulacro.inicio) / 1000));
+  }
+
+  function actualizarReloj() {
+    const el = document.getElementById("sim-timer");
+    if (!el || !simulacro) return;
+    const rest = restanteSim();
+    el.textContent = fmtReloj(rest);
+    el.classList.toggle("urgente", rest <= 300);
+  }
+
+  function arrancarTimer() {
+    detenerTimerSim();
+    actualizarReloj();
+    timerSim = setInterval(function () {
+      if (!simulacro || simulacro.terminado) { detenerTimerSim(); return; }
+      actualizarReloj();
+      if (restanteSim() <= 0) finalizarSimulacro(true);
+    }, 1000);
+  }
+
+  function respondidasSim() {
+    if (!simulacro) return 0;
+    return simulacro.respuestas.filter(function (r) { return r !== null && r !== ""; }).length;
+  }
+
+  function actualizarSim() {
+    if (!simulacro) return;
+    const total = simulacro.preguntas.length;
+    const n = respondidasSim();
+    const cont = document.getElementById("sim-contador");
+    if (cont) cont.textContent = "Pregunta " + (simulacro.idx + 1) + " de " + total + " · " + n + " respondidas";
+    const barra = document.getElementById("sim-barra");
+    if (barra) barra.style.width = Math.round((n / total) * 100) + "%";
+    const pend = document.getElementById("sim-pendientes");
+    if (pend) pend.textContent = n === total ? "Has respondido todas las preguntas." : "Quedan " + (total - n) + " sin responder.";
+    const paleta = document.getElementById("sim-paleta");
+    if (paleta) {
+      paleta.querySelectorAll("[data-ir]").forEach(function (b) {
+        const i = Number(b.getAttribute("data-ir"));
+        b.classList.toggle("ok", simulacro.respuestas[i] !== null && simulacro.respuestas[i] !== "");
+        b.classList.toggle("actual", i === simulacro.idx);
+        b.classList.toggle("marcada", !!simulacro.marcadas[i]);
+        if (i === simulacro.idx) b.setAttribute("aria-current", "true");
+        else b.removeAttribute("aria-current");
+      });
+    }
+  }
+
+  function renderSimulacro() {
+    if (!simulacro) { renderInicio(); return; }
+    detenerVoz();
+    const total = simulacro.preguntas.length;
+    const i = simulacro.idx;
+    const p = simulacro.preguntas[i];
+    const u = getUnidad(p.unidadId);
+    const dada = simulacro.respuestas[i];
+    const marcada = !!simulacro.marcadas[i];
+
+    let html = '<div class="sim-wrap">';
+    html += '<div class="sim-cab">';
+    html += '<button class="btn-volver" id="sim-salir" type="button">← Salir</button>';
+    html += '<div class="sim-info"><strong>Simulacro de examen</strong><span id="sim-contador">Pregunta ' + (i + 1) + " de " + total + "</span></div>";
+    html += '<div class="sim-reloj" id="sim-timer" aria-label="Tiempo restante">' + fmtReloj(restanteSim()) + "</div>";
+    html += "</div>";
+    html += '<div class="barra-progreso" role="progressbar" aria-valuemin="0" aria-valuemax="100"><span id="sim-barra" style="width:' + Math.round((respondidasSim() / total) * 100) + '%"></span></div>';
+
+    html += '<div class="sim-cuerpo"><section class="pregunta">';
+    html += '<p class="tipo">Pregunta ' + (i + 1) + " de " + total + " · Unidad " + u.numero + "</p>";
+    html += '<h1 class="enunciado">' + pintarEnunciado(p.q) + "</h1>";
+
+    if (p.tipo === "completar") {
+      html += '<form class="form-resp" id="sim-form" autocomplete="off">';
+      html += '<label class="sr-only" for="sim-resp">Escribe tu respuesta</label>';
+      html += '<input id="sim-resp" class="input-resp" type="text" placeholder="Escribe aquí…" value="' + esc(dada || "") + '">';
+      html += '<button class="btn btn-secundario" type="submit">Guardar</button>';
+      html += "</form>";
+    } else {
+      html += '<div class="opciones' + (p.tipo === "vf" ? " opciones-vf" : "") + '">';
+      p.opciones.forEach(function (o, k) {
+        const sel = String(dada) === String(k);
+        html += '<button class="opcion' + (sel ? " sel" : "") + '" type="button" data-op="' + k + '" aria-pressed="' + sel + '">';
+        if (p.tipo === "vf") html += '<span class="vf-icono" aria-hidden="true">' + (k === 0 ? "✔️" : "❌") + "</span>";
+        else html += '<span class="opcion-letra">' + "ABCD"[k] + "</span>";
+        html += "<span>" + esc(o) + "</span></button>";
+      });
+      html += "</div>";
+    }
+
+    html += '<div class="sim-nav">';
+    html += '<button class="btn btn-secundario" id="sim-prev" type="button"' + (i === 0 ? " disabled" : "") + ">← Anterior</button>";
+    html += '<button class="btn btn-secundario' + (marcada ? " marcada" : "") + '" id="sim-marcar" type="button" aria-pressed="' + marcada + '">' + (marcada ? "🔖 Marcada" : "🔖 Marcar") + "</button>";
+    html += '<button class="btn btn-primario" id="sim-next" type="button">' + (i === total - 1 ? "Ir al final" : "Siguiente →") + "</button>";
+    html += "</div></section>";
+
+    html += '<aside class="sim-panel"><h2>Preguntas</h2>';
+    html += '<div class="sim-paleta" id="sim-paleta">';
+    for (let k = 0; k < total; k++) {
+      const resp = simulacro.respuestas[k] !== null && simulacro.respuestas[k] !== "";
+      html += '<button type="button" class="sim-num' + (resp ? " ok" : "") + (k === i ? " actual" : "") +
+        (simulacro.marcadas[k] ? " marcada" : "") + '" data-ir="' + k + '" aria-label="Ir a la pregunta ' + (k + 1) + '">' + (k + 1) + "</button>";
+    }
+    html += "</div>";
+    html += '<p class="sim-leyenda"><span class="punto ok"></span> respondida · <span class="punto marcada"></span> marcada</p>';
+    html += '<button class="btn btn-primario btn-grande" id="sim-entregar" type="button">Entregar examen</button>';
+    html += '<p class="mini" id="sim-pendientes"></p>';
+    html += "</aside></div></div>";
+
+    main.innerHTML = html;
+    actualizarSim();
+
+    document.getElementById("sim-salir").addEventListener("click", salirSimulacro);
+
+    main.querySelectorAll("[data-op]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        simulacro.respuestas[i] = Number(b.getAttribute("data-op"));
+        main.querySelectorAll("[data-op]").forEach(function (o) {
+          o.classList.remove("sel");
+          o.setAttribute("aria-pressed", "false");
+        });
+        b.classList.add("sel");
+        b.setAttribute("aria-pressed", "true");
+        actualizarSim();
+      });
+    });
+
+    const form = document.getElementById("sim-form");
+    if (form) {
+      const input = document.getElementById("sim-resp");
+      input.addEventListener("input", function () {
+        simulacro.respuestas[i] = input.value;
+        actualizarSim();
+      });
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        simulacro.respuestas[i] = input.value;
+        actualizarSim();
+        toast("Respuesta guardada");
+      });
+    }
+
+    document.getElementById("sim-prev").addEventListener("click", function () {
+      if (simulacro.idx > 0) { simulacro.idx--; renderSimulacro(); }
+    });
+    document.getElementById("sim-next").addEventListener("click", function () {
+      if (simulacro.idx < total - 1) { simulacro.idx++; renderSimulacro(); }
+      else toast("Puedes entregar el examen cuando quieras.");
+    });
+    document.getElementById("sim-marcar").addEventListener("click", function () {
+      simulacro.marcadas[i] = !simulacro.marcadas[i];
+      renderSimulacro();
+    });
+    main.querySelectorAll("[data-ir]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        simulacro.idx = Number(b.getAttribute("data-ir"));
+        renderSimulacro();
+      });
+    });
+    document.getElementById("sim-entregar").addEventListener("click", function () { entregarSimulacro(false); });
+  }
+
+  function salirSimulacro() {
+    if (!simulacro) { renderInicio(); return; }
+    if (!confirm("¿Salir del simulacro? Perderás las respuestas de esta ronda.")) return;
+    detenerTimerSim();
+    simulacro = null;
+    renderInicio();
+  }
+
+  function entregarSimulacro(auto) {
+    if (!simulacro || simulacro.terminado) return;
+    const total = simulacro.preguntas.length;
+    const sinResponder = total - respondidasSim();
+    if (!auto && sinResponder > 0) {
+      if (!confirm("Quedan " + sinResponder + " preguntas sin responder. ¿Entregar igualmente?")) return;
+    }
+    finalizarSimulacro(auto);
+  }
+
+  function corregirSim(p, dada) {
+    if (dada === null || dada === "" || typeof dada === "undefined") return false;
+    if (p.tipo === "completar") return p.respuestas.indexOf(normalizar(dada)) !== -1;
+    return Number(dada) === p.correcta;
+  }
+
+  function finalizarSimulacro(auto) {
+    if (!simulacro || simulacro.terminado) return;
+    simulacro.terminado = true;
+    detenerTimerSim();
+
+    const total = simulacro.preguntas.length;
+    const detalle = simulacro.preguntas.map(function (p, k) {
+      return { p: p, dada: simulacro.respuestas[k], ok: corregirSim(p, simulacro.respuestas[k]) };
+    });
+    const aciertos = detalle.filter(function (x) { return x.ok; }).length;
+    const nota = Math.round((aciertos / total) * 100) / 10;
+    const pct = Math.round((aciertos / total) * 100);
+    const usado = Math.min(simulacro.duracion, Math.floor((Date.now() - simulacro.inicio) / 1000));
+    const xp = aciertos * 5 + (nota >= 8 ? 50 : nota >= 5 ? 20 : 0);
+
+    estado.xp += xp;
+    const hoy = hoyISO();
+    if (estado.racha.ultima !== hoy) {
+      const ayer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      estado.racha.dias = estado.racha.ultima === ayer ? (estado.racha.dias || 0) + 1 : 1;
+      estado.racha.ultima = hoy;
+    }
+    estado.historial.unshift({ fecha: hoy, titulo: "Simulacro de examen", aciertos: aciertos, total: total, pct: pct });
+    estado.historial = estado.historial.slice(0, 40);
+    guardar();
+
+    ultimoSimulacro = {
+      total: total, aciertos: aciertos, nota: nota, pct: pct, xp: xp,
+      aprobado: nota >= 5, tiempo: usado, auto: !!auto, detalle: detalle
+    };
+    simulacro = null;
+    renderResultadoSimulacro();
+  }
+
+  function renderResultadoSimulacro() {
+    const r = ultimoSimulacro;
+    if (!r) { renderInicio(); return; }
+    pintarStats();
+    if (r.nota >= 8) confeti();
+    detenerVoz();
+
+    const notaTxt = r.nota.toFixed(1).replace(".", ",");
+
+    let html = '<section class="resultado sim-resultado' + (r.aprobado ? " aprobado" : " suspenso") + '">';
+    html += '<div class="resultado-emoji" aria-hidden="true">' + (r.aprobado ? "🎓" : r.nota >= 4 ? "📘" : "📚") + "</div>";
+    html += '<p class="resultado-meta">Simulacro de examen · ' + r.total + " preguntas · 45 min</p>";
+    html += "<h1>" + (r.aprobado ? "¡Aprobado!" : r.nota >= 4 ? "Casi lo tienes" : "Hay que repasar") + "</h1>";
+    html += '<p class="lead">' + (r.auto
+      ? "Se acabó el tiempo. "
+      : "") + (r.aprobado
+      ? "Tienes la base bien asentada. Repasa las unidades flojas para subir nota."
+      : r.nota >= 4
+        ? "Con 5 o más se aprueba. Mira las unidades marcadas y vuelve a intentarlo."
+        : "No pasa nada: empieza por las unidades en rojo, repasa su test y vuelve a probar.") + "</p>";
+    html += '<div class="resultado-cifras">';
+    html += '<div class="cifra cifra-nota"><strong>' + notaTxt + '</strong><span>nota sobre 10</span></div>';
+    html += '<div class="cifra"><strong>' + r.aciertos + "/" + r.total + "</strong><span>aciertos</span></div>";
+    html += '<div class="cifra"><strong>' + fmtReloj(r.tiempo) + "</strong><span>tiempo usado</span></div>";
+    html += "</div>";
+    html += '<p class="sim-estado ' + (r.aprobado ? "ok" : "ko") + '">' + (r.aprobado ? "✅ Aprobado" : "❌ Suspenso") + " · +" + r.xp + " XP</p>";
+    html += "</section>";
+
+    const porUnidad = {};
+    r.detalle.forEach(function (x) {
+      const k = x.p.unidadId;
+      if (!porUnidad[k]) porUnidad[k] = { ok: 0, total: 0 };
+      porUnidad[k].total++;
+      if (x.ok) porUnidad[k].ok++;
+    });
+
+    html += '<section class="bloque"><h2>Resultado por unidad</h2><div class="sim-unidades">';
+    UNIDADES.forEach(function (u) {
+      const d = porUnidad[u.id];
+      if (!d) return;
+      const bien = d.ok === d.total;
+      const regular = d.ok > 0 && d.ok < d.total;
+      html += '<div class="sim-fila ' + (bien ? "bien" : regular ? "regular" : "mal") + '">' +
+        '<span class="sim-fila-emoji" aria-hidden="true">' + u.emoji + "</span>" +
+        '<span class="sim-fila-titulo">' + u.numero + ". " + esc(u.titulo) + "</span>" +
+        '<b>' + d.ok + "/" + d.total + "</b></div>";
+    });
+    html += "</div></section>";
+
+    const fallos = r.detalle.filter(function (x) { return !x.ok; });
+    if (fallos.length) {
+      html += '<section class="bloque"><details class="revision-caja"' + (fallos.length <= 8 ? " open" : "") + ">";
+      html += "<summary>Repasa las " + fallos.length + " preguntas falladas</summary><div class=\"revision\">";
+      fallos.forEach(function (x) {
+        const p = x.p;
+        const correcta = p.tipo === "completar" ? p.respuestas[0] : p.opciones[p.correcta];
+        const dada = (x.dada === null || x.dada === "") ? "sin responder" : (p.tipo === "completar" ? x.dada : p.opciones[Number(x.dada)]);
+        html += '<article class="rev-item">';
+        html += '<p class="rev-q">' + pintarEnunciado(p.q) + "</p>";
+        html += '<p class="rev-mal">Tu respuesta: <del>' + esc(dada) + "</del></p>";
+        html += '<p class="rev-bien">Correcta: <b>' + esc(correcta) + "</b></p>";
+        html += '<p class="rev-exp">' + esc(p.explica) + "</p>";
+        html += "</article>";
+      });
+      html += "</div></details></section>";
+    } else {
+      html += '<section class="bloque"><div class="caja caja-curio"><h2>🌟 10 sobre 10</h2><p>No has fallado ninguna. ¡Enhorabuena!</p></div></section>';
+    }
+
+    html += '<div class="acciones-final">';
+    html += '<button class="btn btn-primario" data-nav="simulacro">🔁 Repetir simulacro</button>';
+    if (Object.keys(estado.fallos).length) html += '<button class="btn btn-secundario" data-nav="repaso">🎯 Repasar fallos</button>';
+    html += '<button class="btn btn-secundario" data-nav="inicio">🏠 Inicio</button>';
+    html += "</div>";
+
+    main.innerHTML = html;
+    pintarStats();
   }
 
   function renderQuiz() {
@@ -740,6 +1078,10 @@
       html += '<button class="btn btn-primario" data-nav="repaso">Repasar ahora</button></div>';
     }
 
+    html += '<section class="bloque"><div class="panel-simulacro"><div>';
+    html += '<h2>Simulacro de examen</h2><p class="mini">40 preguntas de las 15 unidades · 45 minutos · nota sobre 10.</p></div>';
+    html += '<button class="btn btn-primario" data-nav="simulacro">Empezar simulacro</button></div></section>';
+
     html += '<section class="bloque"><h2>Dominio por unidad</h2><div class="lista-progreso">';
     UNIDADES.forEach(function (u) {
       const pct = progresoUnidad(u);
@@ -797,12 +1139,18 @@
 
   /* ---------- navegación ---------- */
   function navegar(vista, param) {
+    if (simulacro && !simulacro.terminado) {
+      if (!confirm("¿Salir del simulacro? Perderás las respuestas de esta ronda.")) return;
+    }
+    detenerTimerSim();
+    simulacro = null;
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     if (vista === "inicio") renderInicio();
     else if (vista === "unidad") renderUnidad(param);
     else if (vista === "test") iniciarTest(param);
     else if (vista === "examen") iniciarExamen();
     else if (vista === "repaso") iniciarRepaso();
+    else if (vista === "simulacro") iniciarSimulacro();
     else if (vista === "progreso") renderProgreso();
     else renderInicio();
   }
@@ -836,6 +1184,13 @@
       guardar();
       aplicarTema();
       renderInicio();
+    }
+  });
+
+  window.addEventListener("beforeunload", function (ev) {
+    if (simulacro && !simulacro.terminado) {
+      ev.preventDefault();
+      ev.returnValue = "";
     }
   });
 

@@ -1,5 +1,5 @@
 /* Service worker · Ciencias 5º */
-const CACHE = "primaria5-v1";
+const CACHE = "primaria5-v2";
 const SHELL = [
   "./", "./index.html", "./styles.css", "./datos.js", "./creditos.js", "./app.js",
   "./creditos.html", "./manifest.webmanifest",
