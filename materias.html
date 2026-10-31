@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elige materia · 5º de Primaria</title>
+<meta name="description" content="Ciencias Naturales, Ciencias Sociales y Matemáticas de 5º de Primaria.">
+<meta name="theme-color" content="#147d6f">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<style>
+:root{--fondo:#fbf7f0;--sup:#fff;--texto:#1e2a32;--suave:#5b6b75;--borde:#e6dccd;--pri:#147d6f}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(900px 420px at 90% 0%, rgba(224,122,95,.10), transparent 60%),
+  radial-gradient(800px 400px at 0% 0%, rgba(20,125,111,.10), transparent 55%),
+  var(--fondo);
+  color:var(--texto);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:980px;margin:0 auto;padding:56px 20px 72px}
+h1{font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.2;margin:0 0 .3em}
+p.lead{color:var(--suave);margin:0 0 34px;max-width:60ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.card{display:block;background:var(--sup);border:1px solid var(--borde);border-radius:20px;padding:24px;text-decoration:none;color:inherit;box-shadow:0 2px 4px rgba(0,0,0,.04),0 12px 28px rgba(0,0,0,.06);transition:transform .15s ease,box-shadow .15s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(0,0,0,.10)}
+.icono{font-size:2.4rem;line-height:1}
+.card h2{font-size:1.2rem;margin:12px 0 6px}
+.card p{color:var(--suave);font-size:.9rem;margin:0 0 14px}
+.card span.go{color:var(--pri);font-weight:700;font-size:.88rem}
+footer{margin-top:44px;color:var(--suave);font-size:.82rem}
+footer a{color:var(--pri)}
+</style>
+</head>
+<body>
+<main>
+<h1>Elige materia</h1>
+<p class="lead">Aplicaciones de repaso para 5º de Primaria. Elige la asignatura y estudia un poco cada día.</p>
+<div class="grid">
+  <a class="card" href="./">
+    <div class="icono">🌿</div>
+    <h2>Ciencias de la Naturaleza</h2>
+    <p>15 unidades: cuerpo humano, seres vivos, ecosistemas, materia, energía y máquinas.</p>
+    <span class="go">Entrar →</span>
+  </a>
+  <a class="card" href="./sociales/">
+    <div class="icono">🗺️</div>
+    <h2>Ciencias Sociales</h2>
+    <p>9 unidades: relieve y aguas de España, población, economía e historia.</p>
+    <span class="go">Entrar →</span>
+  </a>
+  <a class="card" href="./matematicas/">
+    <div class="icono">🧮</div>
+    <h2>Matemáticas</h2>
+    <p>15 unidades: números, fracciones, decimales, medidas, geometría y estadística.</p>
+    <span class="go">Entrar →</span>
+  </a>
+</div>
+<footer>
+  <p>Material de repaso no oficial, sin relación con ninguna editorial. · <a href="https://github.com/amedgit/primaria5">Código en GitHub</a></p>
+</footer>
+</main>
+</body>
+</html>

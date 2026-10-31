@@ -4,6 +4,8 @@ Aplicaciones web de repaso para **5º de Primaria**, hechas para estudiar un poc
 
 - **Ciencias de la Naturaleza:** https://amedgit.github.io/primaria5/
 - **Ciencias Sociales:** https://amedgit.github.io/primaria5/sociales/
+- **Matemáticas:** https://amedgit.github.io/primaria5/matematicas/
+- **Selector de materia:** https://amedgit.github.io/primaria5/materias.html
 
 Cada materia incluye unidades con ideas clave, fotografías, resúmenes locutados,
 tarjetas de vocabulario, tests, repaso de fallos, simulacro de examen y progreso
@@ -20,9 +22,15 @@ energía, uso de la energía y máquinas.
 Relieve de España, aguas, población, actividad económica, sectores productivos,
 Edad Media (visigodos y al-Ándalus), reinos cristianos, Edad Moderna y siglos XVII-XVIII.
 
+## Matemáticas (15 unidades)
+
+Números naturales, operaciones, división, múltiplos y divisores, fracciones, equivalentes,
+decimales, operaciones con decimales, porcentajes, longitud/capacidad/masa, superficie,
+sistema sexagesimal, figuras planas, perímetro y área, y probabilidad y estadística.
+
 ## Características comunes
 
-- 3 fotos por unidad, ampliables, con pie y crédito.
+- 3 fotos por unidad en Naturales y Sociales; **15 esquemas propios** en Matemáticas, ampliables.
 - Resumen locutado en MP3 (~1 min por unidad).
 - Test por unidad con corrección y explicación.
 - Repaso de preguntas falladas y simulacro de examen cronometrado.
@@ -37,6 +45,7 @@ index.html            Ciencias Naturales
 styles.css, app.js, datos.js, creditos.js
 img/, audio/           fotos y locuciones de Naturales
 sociales/              Ciencias Sociales (misma estructura)
+matematicas/           Matemáticas (esquemas SVG propios)
 ```
 
 ## Aviso

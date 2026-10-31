@@ -778,3 +778,18 @@ main {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   html { scroll-behavior: auto; }
 }
+
+
+/* selector de materias */
+.materias { display: flex; align-items: center; gap: 6px; }
+.materias-movil {
+  display: none; width: 34px; height: 34px; border-radius: 50%;
+  align-items: center; justify-content: center;
+  background: var(--primario-suave); color: var(--primario);
+  border: 1px solid color-mix(in srgb, var(--primario) 30%, var(--borde));
+  text-decoration: none; font-size: 1rem;
+}
+@media (max-width: 560px) {
+  .materias { display: none; }
+  .materias-movil { display: inline-flex; }
+}
