@@ -1,18 +1,18 @@
 /* Service worker · Ciencias Sociales 5º */
-const CACHE = "sociales-v1";
+const CACHE = "sociales-v2";
 const SHELL = [
   "./", "./index.html", "./styles.css", "./datos.js", "./creditos.js", "./app.js",
   "./creditos.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
-  "./img/mini/s1a.jpg",
-  "./img/mini/s2a.jpg",
-  "./img/mini/s3a.jpg",
-  "./img/mini/s4a.jpg",
-  "./img/mini/s5a.jpg",
-  "./img/mini/s6a.jpg",
-  "./img/mini/s7a.jpg",
-  "./img/mini/s8a.jpg",
-  "./img/mini/s9a.jpg"
+  "./img/mini/s1.jpg",
+  "./img/mini/s2.jpg",
+  "./img/mini/s3.jpg",
+  "./img/mini/s4.jpg",
+  "./img/mini/s5.jpg",
+  "./img/mini/s6.jpg",
+  "./img/mini/s7.jpg",
+  "./img/mini/s8.jpg",
+  "./img/mini/s9.jpg"
 ];
 
 self.addEventListener("install", function (event) {
