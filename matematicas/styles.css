@@ -781,7 +781,7 @@ main {
 
 
 /* Esquemas de Matemáticas: mostrar completos, sin recortar */
-.figura { max-width: 900px; margin-left: auto; margin-right: auto; }
+.figura { max-width: 800px; margin-left: auto; margin-right: auto; }
 .figura-btn img { object-fit: contain; height: auto; width: 100%; background: #fffdf8; }
 .unidad-foto { object-fit: contain; background: #fffdf8; }
 
