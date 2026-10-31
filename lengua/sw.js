@@ -1,5 +1,5 @@
 /* Service worker · Lengua Castellana 5º */
-const CACHE = "lengua-v1";
+const CACHE = "lengua-v2";
 const SHELL = [
   "./", "./index.html", "./styles.css", "./datos.js", "./creditos.js", "./app.js",
   "./creditos.html", "./manifest.webmanifest",

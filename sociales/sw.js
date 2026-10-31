@@ -1,5 +1,5 @@
 /* Service worker · Ciencias Sociales 5º */
-const CACHE = "sociales-v4";
+const CACHE = "sociales-v5";
 const SHELL = [
   "./", "./index.html", "./styles.css", "./datos.js", "./creditos.js", "./app.js",
   "./creditos.html", "./manifest.webmanifest",

@@ -36,7 +36,10 @@
     <button class="nav-btn" data-nav="inicio">Unidades</button>
     <button class="nav-btn" data-nav="progreso">Mi progreso</button>
   </nav>
-  <div class="materias"><a class="materia" href="../" title="Cambiar a Naturales"><span aria-hidden="true">🧬</span><span class="materia-txt">Naturales</span></a><a class="materia" href="../matematicas/" title="Cambiar a Matemáticas"><span aria-hidden="true">🧮</span><span class="materia-txt">Matemáticas</span></a><a class="materia" href="../lengua/" title="Cambiar a Lengua"><span aria-hidden="true">📖</span><span class="materia-txt">Lengua</span></a></div><a class="materias-movil" href="../materias.html" title="Cambiar de materia" aria-label="Cambiar de materia">📚</a>
+  <details class="menu-materias" id="menu-materias">
+    <summary aria-label="Elegir materia"><span aria-hidden="true">📚</span><span class="mm-txt">Materias</span><span class="mm-flecha" aria-hidden="true">▾</span></summary>
+    <div class="mm-panel"><a class="mm-item" href="../"><span class="mm-ico" aria-hidden="true">🌿</span><span class="mm-texto"><b>Ciencias de la Naturaleza</b><small>15 unidades</small></span></a><a class="mm-item actual" href="../sociales/" aria-current="page"><span class="mm-ico" aria-hidden="true">🗺️</span><span class="mm-texto"><b>Ciencias Sociales</b><small>9 unidades</small></span><em>Estás aquí</em></a><a class="mm-item" href="../matematicas/"><span class="mm-ico" aria-hidden="true">🧮</span><span class="mm-texto"><b>Matemáticas</b><small>15 unidades</small></span></a><a class="mm-item" href="../lengua/"><span class="mm-ico" aria-hidden="true">📖</span><span class="mm-texto"><b>Lengua Castellana</b><small>15 lecturas</small></span></a></div>
+  </details>
 
   <div class="stats">
     <span class="stat" id="stat-xp" title="Puntos de experiencia">⭐ <b>0</b></span>
@@ -70,6 +73,20 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(function () {});
   });
 }
+</script>
+<script>
+document.addEventListener("click", function (ev) {
+  var menu = document.getElementById("menu-materias");
+  if (menu && menu.hasAttribute("open") && !menu.contains(ev.target)) {
+    menu.removeAttribute("open");
+  }
+});
+document.addEventListener("keydown", function (ev) {
+  if (ev.key === "Escape") {
+    var menu = document.getElementById("menu-materias");
+    if (menu) menu.removeAttribute("open");
+  }
+});
 </script>
 </body>
 </html>

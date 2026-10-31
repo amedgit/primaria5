@@ -799,3 +799,47 @@ main {
   .materias { display: none; }
   .materias-movil { display: inline-flex; }
 }
+
+/* menú de materias */
+.menu-materias { position: relative; margin-left: 6px; }
+.menu-materias summary {
+  list-style: none; cursor: pointer; user-select: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 999px;
+  font-size: .8rem; font-weight: 650; color: var(--primario);
+  background: var(--primario-suave);
+  border: 1px solid color-mix(in srgb, var(--primario) 30%, var(--borde));
+}
+.menu-materias summary::-webkit-details-marker { display: none; }
+.menu-materias summary:hover { background: color-mix(in srgb, var(--primario) 18%, var(--superficie)); }
+.mm-flecha { font-size: .7rem; transition: transform .2s ease; }
+.menu-materias[open] .mm-flecha { transform: rotate(180deg); }
+.mm-panel {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--superficie); border: 1px solid var(--borde);
+  border-radius: 16px; box-shadow: var(--sombra); padding: 8px;
+  display: grid; gap: 4px;
+}
+.mm-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 11px;
+  text-decoration: none; color: inherit;
+}
+.mm-item:hover { background: var(--fondo-2); }
+.mm-item.actual { background: var(--primario-suave); }
+.mm-ico { font-size: 1.35rem; line-height: 1; }
+.mm-texto { display: flex; flex-direction: column; min-width: 0; }
+.mm-texto b { font-size: .88rem; line-height: 1.25; }
+.mm-texto small { font-size: .72rem; color: var(--texto-suave); }
+.mm-item em {
+  margin-left: auto; font-style: normal; font-size: .66rem;
+  font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--primario); white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .menu-materias { margin-left: 2px; }
+  .menu-materias summary { padding: 0; width: 34px; height: 34px; justify-content: center; }
+  .mm-txt, .mm-flecha { display: none; }
+  .mm-panel { position: fixed; left: 10px; right: 10px; top: 62px; width: auto; }
+}
