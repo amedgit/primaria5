@@ -121,6 +121,16 @@ b, strong { font-weight: 700; }
 }
 .icono-btn:hover { background: var(--fondo-2); }
 
+.materia {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-left: 6px; padding: 7px 12px; border-radius: 999px;
+  font-size: .8rem; font-weight: 650; text-decoration: none; white-space: nowrap;
+  color: var(--primario);
+  background: var(--primario-suave);
+  border: 1px solid color-mix(in srgb, var(--primario) 30%, var(--borde));
+}
+.materia:hover { background: color-mix(in srgb, var(--primario) 18%, var(--superficie)); }
+
 /* ---------- layout ---------- */
 main {
   width: min(1120px, 100%);
@@ -720,6 +730,8 @@ main {
 }
 
 @media (max-width: 560px) {
+  .materia { width: 34px; height: 34px; padding: 0; justify-content: center; margin-left: 2px; }
+  .materia-txt { display: none; }
   .barra { gap: 5px; padding: 8px 10px; flex-wrap: nowrap; }
   .marca { gap: 6px; padding: 2px; min-width: 0; }
   .marca-icono { font-size: 1.35rem; }

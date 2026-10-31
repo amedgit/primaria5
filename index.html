@@ -4,21 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="App de estudio interactiva de Ciencias de la Naturaleza de 5º de Primaria: 15 unidades, fotos, resúmenes locutados, test y repaso inteligente.">
-<title>Ciencias de la Naturaleza 5º · Estudia y practica</title>
+<title>Ciencias 5º · Estudia y practica</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
-<!-- web -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="Ciencias de la Naturaleza 5º · Estudia y practica">
-<meta property="og:description" content="15 unidades con fotos, resúmenes locutados, tarjetas, test y repaso inteligente. Gratis y sin cuentas.">
-<meta property="og:url" content="https://amedgit.github.io/primaria5/">
-<meta property="og:image" content="https://amedgit.github.io/primaria5/icons/icon-512.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#147d6f">
-<link rel="canonical" href="https://amedgit.github.io/primaria5/">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
 </head>
 <body>
 <a class="saltar" href="#main">Saltar al contenido</a>
@@ -36,6 +24,7 @@
     <button class="nav-btn" data-nav="inicio">Unidades</button>
     <button class="nav-btn" data-nav="progreso">Mi progreso</button>
   </nav>
+  <a class="materia" href="./sociales/" title="Cambiar a Ciencias Sociales"><span aria-hidden="true">🗺️</span><span class="materia-txt">Sociales</span></a>
 
   <div class="stats">
     <span class="stat" id="stat-xp" title="Puntos de experiencia">⭐ <b>0</b></span>
@@ -48,7 +37,7 @@
 
 <footer class="pie">
   <p>Material de repaso <strong>no oficial</strong>, organizado según el currículo de Ciencias de la Naturaleza de 5º de Primaria. No reproduce ningún libro de texto ni está vinculado a ninguna editorial.</p>
-  <p class="pie-mini">Tus progresos se guardan solo en este navegador · <button class="enlace" id="btn-borrar" type="button">Borrar progreso</button> · <a class="enlace" href="./creditos.html">Créditos y privacidad</a></p>
+  <p class="pie-mini">Tus progresos se guardan solo en este navegador · <button class="enlace" id="btn-borrar" type="button">Borrar progreso</button> · <a class="enlace" href="./sociales/">🗺️ Ciencias Sociales</a></p>
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -63,12 +52,5 @@
 <script src="datos.js"></script>
 <script src="creditos.js"></script>
 <script src="app.js"></script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").catch(function () {});
-  });
-}
-</script>
 </body>
 </html>

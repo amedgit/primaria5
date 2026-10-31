@@ -1,35 +1,42 @@
-# Ciencias de la Naturaleza 5º
+# Primaria 5º · Ciencias
 
-Aplicación web de repaso para **5º de Primaria**: 15 unidades, 45 fotografías,
-resúmenes locutados en español, tarjetas de vocabulario, 107 preguntas, repaso
-inteligente de fallos, examen final y progreso guardado en el dispositivo.
+Aplicaciones web de repaso para **5º de Primaria**, hechas para estudiar un poco cada día.
 
-**Web:** https://amedgit.github.io/primaria5/
+- **Ciencias de la Naturaleza:** https://amedgit.github.io/primaria5/
+- **Ciencias Sociales:** https://amedgit.github.io/primaria5/sociales/
 
-## Características
+Cada materia incluye unidades con ideas clave, fotografías, resúmenes locutados,
+tarjetas de vocabulario, tests, repaso de fallos, simulacro de examen y progreso
+guardado en el propio dispositivo.
 
-- 15 unidades con ideas clave, curiosidades y trucos.
-- 3 fotos por unidad (principal + galería), ampliables, con pie y crédito.
+## Ciencias de la Naturaleza (15 unidades)
+
+Cuerpo humano, sentidos, sistema nervioso, aparato locomotor, salud, fotosíntesis,
+ecosistemas, relaciones, tipos de ecosistemas, medio ambiente, materia, fuerzas,
+energía, uso de la energía y máquinas.
+
+## Ciencias Sociales (9 unidades)
+
+Relieve de España, aguas, población, actividad económica, sectores productivos,
+Edad Media (visigodos y al-Ándalus), reinos cristianos, Edad Moderna y siglos XVII-XVIII.
+
+## Características comunes
+
+- 3 fotos por unidad, ampliables, con pie y crédito.
 - Resumen locutado en MP3 (~1 min por unidad).
 - Test por unidad con corrección y explicación.
-- Repaso de preguntas falladas y examen corto de 20 preguntas.
-- **Simulacro de examen**: 40 preguntas, 45 minutos, navegación libre, marcar para revisar, nota sobre 10 y resultado por unidad.
-- Estrellas, XP, racha de días e historial (solo en tu navegador).
+- Repaso de preguntas falladas y simulacro de examen cronometrado.
+- Estrellas, XP, racha e historial (solo en el navegador).
 - Instalable como app (PWA) y funciona sin conexión tras la primera visita.
 - Modo claro/oscuro y diseño adaptado a móvil.
 
 ## Estructura
 
 ```
-index.html          aplicación
-styles.css          estilos
-datos.js            unidades, resúmenes, vocabulario y preguntas
-creditos.js         pies de foto y autoría
-app.js              lógica (test, progreso, audio, visor)
-img/                fotos principales y galería; img/mini/ miniaturas
-audio/              resúmenes locutados
-creditos.html       créditos, privacidad y aviso legal
-manifest.webmanifest / sw.js   instalación y modo sin conexión
+index.html            Ciencias Naturales
+styles.css, app.js, datos.js, creditos.js
+img/, audio/           fotos y locuciones de Naturales
+sociales/              Ciencias Sociales (misma estructura)
 ```
 
 ## Aviso
@@ -42,9 +49,4 @@ vinculado a ninguna editorial.
 
 - Código: MIT (ver `LICENSE`).
 - Textos y preguntas: CC BY-NC-SA 4.0.
-- Fotografías: Wikimedia Commons, con la licencia indicada en `creditos.html`.
-
-## Desarrollo
-
-El contenido está en `datos.js`. Cada unidad incluye `resumen`, `vocabulario`,
-`curiosidad`, `truco` y `preguntas` (tipos `opcion`, `vf` y `completar`).
+- Fotografías: Wikimedia Commons, con la licencia indicada en cada página de créditos.
